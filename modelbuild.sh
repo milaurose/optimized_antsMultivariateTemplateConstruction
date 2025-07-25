@@ -9,7 +9,7 @@
 # ARG_OPTIONAL_BOOLEAN([float],[],[Use float instead of double for calculations (reduce memory requirements)],[])
 # ARG_OPTIONAL_BOOLEAN([fast],[],[Run SyN registration with Mattes instead of CC],[])
 # ARG_OPTIONAL_SINGLE([winsorize_lower_bound],[],[Lower bound for antsReg winsorize-image-intensities],[0.005])
-# ARG_OPTIONAL_SINGLE([winsorize_upper_bound],[],[Upper bound for antsReg winsorize-image-intensities],[0.005])
+# ARG_OPTIONAL_SINGLE([winsorize_upper_bound],[],[Upper bound for antsReg winsorize-image-intensities],[0.995])
 # ARG_OPTIONAL_SINGLE([average-type],[],[Type of averaging to apply during modelbuild],[trimmed_mean])
 # ARG_OPTIONAL_BOOLEAN([average-norm],[],[Whether to normalize each image by their mean before evaluating average.],[])
 # ARG_OPTIONAL_SINGLE([trim-percent],[],[Percentage to cut off if using trimmed_mean],[15])
@@ -119,7 +119,7 @@ print_help()
   printf '\t%s\n' "--float, --no-float: Use float instead of double for calculations (reduce memory requirements) (off by default)"
   printf '\t%s\n' "--fast, --no-fast: Run SyN registration with Mattes instead of CC (off by default)"
   printf '\t%s\n' "--winsorize_lower_bound: Lower bound for antsRegistration winsorize-image-intensities."
-  printf '\t%s\n' "--winsorize_upper_bound: Lower upper for antsRegistration winsorize-image-intensities."
+  printf '\t%s\n' "--winsorize_upper_bound: Upper bound for antsRegistration winsorize-image-intensities."
   printf '\t%s\n' "--average-type: Type of averaging to apply during modelbuild. Can be one of: 'mean', 'median', 'trimmed_mean' and 'huber' (default: 'trimmed_mean')"
   printf '\t%s\n' "--average-norm, --no-average-norm: Whether to normalize each image by their mean before evaluating average. (off by default)"
   printf '\t%s\n' "--trim-percent: Percentage to cut off if using trimmed_mean (default: '15')"
