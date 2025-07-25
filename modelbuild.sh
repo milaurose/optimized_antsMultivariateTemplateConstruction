@@ -8,6 +8,8 @@
 # ARG_OPTIONAL_SINGLE([convergence],[],[Convergence limit during registration calls],[1e-7])
 # ARG_OPTIONAL_BOOLEAN([float],[],[Use float instead of double for calculations (reduce memory requirements)],[])
 # ARG_OPTIONAL_BOOLEAN([fast],[],[Run SyN registration with Mattes instead of CC],[])
+# ARG_OPTIONAL_SINGLE([winsorize_lower_bound],[],[Lower bound for antsReg winsorize-image-intensities],[0.005])
+# ARG_OPTIONAL_SINGLE([winsorize_upper_bound],[],[Upper bound for antsReg winsorize-image-intensities],[0.005])
 # ARG_OPTIONAL_SINGLE([average-type],[],[Type of averaging to apply during modelbuild],[trimmed_mean])
 # ARG_OPTIONAL_BOOLEAN([average-norm],[],[Whether to normalize each image by their mean before evaluating average.],[])
 # ARG_OPTIONAL_SINGLE([trim-percent],[],[Percentage to cut off if using trimmed_mean],[15])
@@ -84,6 +86,8 @@ _arg_iterations="4"
 _arg_convergence="1e-7"
 _arg_float="off"
 _arg_fast="off"
+_arg_winsorize_lower_bound="0.005"
+_arg_winsorize_upper_bound="0.995"
 _arg_average_type="trimmed_mean"
 _arg_average_norm="off"
 _arg_trim_percent="15"
@@ -114,6 +118,8 @@ print_help()
   printf '\t%s\n' "--convergence: Convergence limit during registration calls (default: '1e-7')"
   printf '\t%s\n' "--float, --no-float: Use float instead of double for calculations (reduce memory requirements) (off by default)"
   printf '\t%s\n' "--fast, --no-fast: Run SyN registration with Mattes instead of CC (off by default)"
+  printf '\t%s\n' "--winsorize_lower_bound: Lower bound for antsRegistration winsorize-image-intensities."
+  printf '\t%s\n' "--winsorize_upper_bound: Lower upper for antsRegistration winsorize-image-intensities."
   printf '\t%s\n' "--average-type: Type of averaging to apply during modelbuild. Can be one of: 'mean', 'median', 'trimmed_mean' and 'huber' (default: 'trimmed_mean')"
   printf '\t%s\n' "--average-norm, --no-average-norm: Whether to normalize each image by their mean before evaluating average. (off by default)"
   printf '\t%s\n' "--trim-percent: Percentage to cut off if using trimmed_mean (default: '15')"
@@ -201,6 +207,16 @@ parse_commandline()
       --no-fast|--fast)
         _arg_fast="on"
         test "${1:0:5}" = "--no-" && _arg_fast="off"
+        ;;
+      --winsorize_lower_bound)
+        test $# -lt 2 && die "Missing value for the optional argument '$_key'." 1
+        _arg_winsorize_lower_bound="$2"
+        shift
+        ;;
+      --winsorize_upper_bound)
+        test $# -lt 2 && die "Missing value for the optional argument '$_key'." 1
+        _arg_winsorize_upper_bound="$2"
+        shift
         ;;
       --average-type)
         test $# -lt 2 && die "Missing value for the optional argument '$_key'." 1
@@ -502,6 +518,7 @@ for reg_type in "${_arg_stages[@]}"; do
             echo antsRegistration_affine_SyN.sh --clobber \
               ${_arg_float} \
               --skip-nonlinear --linear-type ${reg_type} ${_arg_fast} \
+              --winsorize-image-intensities ${_arg_winsorize_lower_bound},${_arg_winsorize_upper_bound} \
               ${_arg_mask_extract} ${_mask} \
               ${bootstrap} \
               --convergence ${_arg_convergence} \
@@ -514,6 +531,7 @@ for reg_type in "${_arg_stages[@]}"; do
             walltime_reg=${_arg_walltime_nonlinear}
             echo antsRegistration_affine_SyN.sh --clobber \
               ${_arg_float} ${_arg_fast} \
+              --winsorize-image-intensities ${_arg_winsorize_lower_bound},${_arg_winsorize_upper_bound} \
               -o ${_arg_output_dir}/${reg_type}/${i}/resample/$(basename ${_arg_inputs[${j}]}) \
               ${_arg_mask_extract} ${_mask} \
               ${bootstrap} \
@@ -526,6 +544,7 @@ for reg_type in "${_arg_stages[@]}"; do
             walltime_reg=${_arg_walltime_nonlinear}
             echo antsRegistration_affine_SyN.sh --clobber \
               ${_arg_float} ${_arg_fast} \
+              --winsorize-image-intensities ${_arg_winsorize_lower_bound},${_arg_winsorize_upper_bound} \
               -o ${_arg_output_dir}/${reg_type}/${i}/resample/$(basename ${_arg_inputs[${j}]}) \
               ${_arg_mask_extract} ${_mask} \
               --skip-linear \

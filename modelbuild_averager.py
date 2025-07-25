@@ -31,6 +31,14 @@ if __name__ == "__main__":
                         help="""
                         Specify % to trim off if using trimmed_mean.
                         """)
+    parser.add_argument("--winsorize_lower_bound", type=float, default=0.005,
+                        help="""
+                        Specify % of lowest outlier intensities values to not consider during registration.
+                        """)
+    parser.add_argument("--winsorize_upper_bound", type=float, default=0.995,
+                        help="""
+                        Specify % of highest outlier intensities values to not consider during registration.
+                        """)
     parser.add_argument("--normalize", dest='normalize', action='store_true',
                         help="""
                         Whether to divide each image by its mean before computing average.
